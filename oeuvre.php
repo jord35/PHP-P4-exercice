@@ -9,7 +9,12 @@
     if(empty($_GET['id'])) {
         header('Location: index.php');
     }
-    // On récupère l'ID. 
+
+    /*
+      On récupère l'ID En s'assurant que ce soit un entier et qu'il
+      n'y ait pas de chaîne bizarre, ce qui permet de pouvoir réutiliser
+      la variable ailleurs.  
+      */
     $id = (int) $_GET['id'];
 
     // On prépare la requête SQL pour récupérer l'oeuvre correspondante. 
