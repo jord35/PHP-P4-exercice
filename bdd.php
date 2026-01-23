@@ -5,7 +5,7 @@ function connectToSql($dbname)
         // Connexion à MySQL
         $mysqlClient = new PDO(
             "mysql:host=localhost;dbname=$dbname;charset=utf8",
-            "",
+            "root",
             ""
         );
 

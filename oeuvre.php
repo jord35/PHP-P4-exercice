@@ -1,25 +1,31 @@
 <?php
     require 'header.php';
-    require 'oeuvres.php';
+    require 'bdd.php';
+    // On se connecte à la base. 
+    $bdd = connectToSql('artbox');
+    
 
     // Si l'URL ne contient pas d'id, on redirige sur la page d'accueil
     if(empty($_GET['id'])) {
         header('Location: index.php');
     }
+    // On récupère l'ID. 
+    $id = (int) $_GET['id'];
 
-    $oeuvre = null;
+    // On prépare la requête SQL pour récupérer l'oeuvre correspondante. 
+    $sqlQuery = "SELECT * FROM oeuvres WHERE id =  ?";
 
-    // On parcourt les oeuvres du tableau afin de rechercher celle qui a l'id précisé dans l'URL
-    foreach($oeuvres as $o) {
-        // intval permet de transformer l'id de l'URL en un nombre (exemple : "2" devient 2)
-        if($o['id'] === intval($_GET['id'])) {
-            $oeuvre = $o;
-            break; // On stoppe le foreach si on a trouvé l'oeuvre
-        }
-    }
+    // On envoie la requête, mais sans la valeur. La base SQL va donc préparer son plan. 
+    $oeuvreStatement = $bdd->prepare($sqlQuery);
+    // On envoie les valeurs séparément, ce qui permet à la base SQL de les traiter sans jamais pouvoir changer son plan. 
+    $oeuvreStatement->execute([$id]);
+    // On transforme les données en tableaux pour qu'elles soient utilisables. 
+    $oeuvre = $oeuvreStatement->fetch();
+
+    
 
     // Si aucune oeuvre trouvé, on redirige vers la page d'accueil
-    if(is_null($oeuvre)) {
+    if(!$oeuvre) {
         header('Location: index.php');
     }
 ?>
