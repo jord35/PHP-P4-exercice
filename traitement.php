@@ -8,15 +8,26 @@ if (empty($_POST['titre']) || empty($_POST['description']) || empty($_POST['arti
 ){
     // Redirection vers le formulaire d'ajout 
     header('Location: ajouter.php?');
+    // on utilise exit pour s'assurer que le script s'arrête ici
+    exit();
 
    }
     
 //    Si tout est bon, on insère dans la BDD
    else{
-    $titre = htmlspecialchars($_POST['titre']);
-    $description = htmlspecialchars($_POST['description']);
-    $artiste = htmlspecialchars($_POST['artiste']);
-    $image = htmlspecialchars($_POST['image']);
+    // Récupération et nettoyage des données avec trim()
+    $titre = trim($_POST['titre'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $artiste = trim($_POST['artiste'] ?? '');
+    $image = trim($_POST['image'] ?? '');
+// Vérification que l'URL pointe vers une image de maniere detournée en demandant ses dimensions
+    $imgIsImg = getimagesize($image);
+    if ($imgIsImg === false) {
+
+    header('Location: ajouter.php?error=invalidimage');
+    exit();
+    }
+
 // Connexion à la BDD
     include 'bdd.php';
     $bdd = connectToSql('artbox');
@@ -26,5 +37,6 @@ if (empty($_POST['titre']) || empty($_POST['description']) || empty($_POST['arti
     $insert->execute(array($titre, $description, $artiste, $image));
 // Redirection vers la page de l'oeuvre ajoutée
     header('Location: oeuvre.php?id=' . $bdd->lastInsertId());
+    exit();
 
    }
